@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Department Reports{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0"><i class="bi bi-collection me-2"></i>Department / Faculty Reports</h1>
+    <a class="btn btn-outline-secondary" href="{% url 'analytics:grade_analytics' %}"><i class="bi bi-graph-up me-1"></i>Grade Analytics</a>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header">Enrollments by Department</div>
+        <div class="card-body">
+          <canvas id="deptEnrollChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header">Pass Rate by Department</div>
+        <div class="card-body">
+          <canvas id="deptPassChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header">Average Marks by Department</div>
+        <div class="card-body">
+          <canvas id="deptAvgMarksChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header">Department Summary</div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Department</th>
+              <th>Total Courses</th>
+              <th>Total Enrolled</th>
+              <th>Average Marks</th>
+              <th>Pass Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in departments %}
+            <tr>
+              <td>{{ d.label }}</td>
+              <td>{{ d.total_courses }}</td>
+              <td>{{ d.total_enrolled }}</td>
+              <td>{% if d.avg_marks %}{{ d.avg_marks }}%{% else %}—{% endif %}</td>
+              <td>{{ d.pass_rate }}%</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted p-4">No data</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  const deptLabels = {{ dept_labels|safe }};
+  new Chart(document.getElementById('deptEnrollChart'), {
+    type: 'bar', data: { labels: deptLabels, datasets: [{ label: 'Enrollments', data: {{ dept_enrollments|safe }}, backgroundColor: '#6f42c1' }] },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+  });
+  new Chart(document.getElementById('deptPassChart'), {
+    type: 'line', data: { labels: deptLabels, datasets: [{ label: 'Pass %', data: {{ dept_pass_rates|safe }}, borderColor: '#198754', backgroundColor: 'rgba(25,135,84,.2)', fill: true, tension: .3 }] },
+    options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+  });
+  new Chart(document.getElementById('deptAvgMarksChart'), {
+    type: 'bar', data: { labels: deptLabels, datasets: [{ label: 'Avg %', data: {{ dept_avg_marks|safe }}, backgroundColor: '#0d6efd' }] },
+    options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+  });
+</script>
+{% endblock %}

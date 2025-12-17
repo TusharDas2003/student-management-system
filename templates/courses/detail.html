@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.code }} - Course Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col">
+        <a href="{% url 'courses:list' %}" class="btn btn-outline-secondary mb-3">
+          <i class="bi bi-arrow-left me-2"></i>Back to Courses
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <h2 class="h3 mb-3 text-primary">{{ course.code }}</h2>
+            <h3 class="h5 mb-3">{{ course.title }}</h3>
+            <p class="text-muted mb-3">
+              <i class="bi bi-award me-2"></i><strong>Credits:</strong> {{ course.credits }}
+            </p>
+            <p class="text-muted mb-3">
+              <i class="bi bi-calendar2-check me-2"></i><strong>Created:</strong> {{ course.created_at|date:"F d, Y" }}
+            </p>
+            {% if course.description %}
+            <hr>
+            <h5 class="mb-2">Description</h5>
+            <p class="text-muted">{{ course.description }}</p>
+            {% endif %}
+            <hr>
+            <div class="d-grid gap-2">
+              <a href="{% url 'courses:update' course.pk %}" class="btn btn-primary">
+                <i class="bi bi-pencil me-2"></i>Edit Course
+              </a>
+              <a href="{% url 'enrollments:course_report' course.pk %}" class="btn btn-success">
+                <i class="bi bi-file-earmark-bar-graph me-2"></i>Enrollment Report
+              </a>
+              <a href="{% url 'courses:delete' course.pk %}" class="btn btn-outline-danger">
+                <i class="bi bi-trash me-2"></i>Delete Course
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-primary text-white p-3">
+            <h4 class="mb-0"><i class="bi bi-people me-2"></i>Enrolled Students ({{ enrollments.count }})</h4>
+          </div>
+          <div class="card-body p-0">
+            {% if enrollments %}
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Student</th>
+                    <th>Email</th>
+                    <th>Enrolled</th>
+                    <th>Grade</th>
+                    <th>Marks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for enrollment in enrollments %}
+                  <tr>
+                    <td>
+                      <a href="{% url 'students:detail' enrollment.student.pk %}" class="text-decoration-none">
+                        <strong>{{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</strong>
+                      </a>
+                    </td>
+                    <td><small class="text-muted">{{ enrollment.student.email }}</small></td>
+                    <td><small>{{ enrollment.enrolled_on|date:"M d, Y" }}</small></td>
+                    <td>
+                      {% if enrollment.grade %}
+                        <span class="badge {% if enrollment.grade in 'A+,A,A-' %}bg-success{% elif enrollment.grade in 'B+,B,B-' %}bg-primary{% elif enrollment.grade in 'C+,C,C-' %}bg-warning{% elif enrollment.grade == 'IP' %}bg-info{% else %}bg-danger{% endif %}">
+                          {{ enrollment.grade }}
+                        </span>
+                      {% else %}
+                        <span class="text-muted">—</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if enrollment.marks %}
+                        {{ enrollment.marks }}%
+                      {% else %}
+                        <span class="text-muted">—</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% else %}
+            <div class="p-5 text-center text-muted">
+              <i class="bi bi-inbox display-6 d-block mb-2"></i>
+              <p>No students enrolled yet</p>
+              <a href="{% url 'enrollments:create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Add Enrollment
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

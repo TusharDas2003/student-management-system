@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Enrollment Details - Student Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white p-4">
+          <h3 class="mb-0"><i class="bi bi-info-circle me-2"></i>Enrollment Details</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="row mb-3">
+            <div class="col-md-4 fw-bold">Student:</div>
+            <div class="col-md-8">
+              <a href="{% url 'students:detail' enrollment.student.pk %}">
+                {{ enrollment.student.first_name }} {{ enrollment.student.last_name }}
+              </a>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-4 fw-bold">Email:</div>
+            <div class="col-md-8">{{ enrollment.student.email }}</div>
+          </div>
+          <hr>
+          <div class="row mb-3">
+            <div class="col-md-4 fw-bold">Course:</div>
+            <div class="col-md-8">
+              <a href="{% url 'courses:detail' enrollment.course.pk %}">
+                {{ enrollment.course.code }} - {{ enrollment.course.title }}
+              </a>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-4 fw-bold">Credits:</div>
+            <div class="col-md-8"><span class="badge bg-secondary">{{ enrollment.course.credits }}</span></div>
+          </div>
+          <hr>
+          <div class="row mb-3">
+            <div class="col-md-4 fw-bold">Enrolled On:</div>
+            <div class="col-md-8">{{ enrollment.enrolled_on|date:"F d, Y" }}</div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-4 fw-bold">Grade:</div>
+            <div class="col-md-8">
+              {% if enrollment.grade %}
+                <span class="badge {% if enrollment.grade in 'A+,A,A-' %}bg-success{% elif enrollment.grade in 'B+,B,B-' %}bg-primary{% elif enrollment.grade in 'C+,C,C-' %}bg-warning{% elif enrollment.grade == 'IP' %}bg-info{% else %}bg-danger{% endif %}">
+                  {{ enrollment.grade }}
+                </span>
+              {% else %}
+                <span class="text-muted">Not graded yet</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-4 fw-bold">Marks:</div>
+            <div class="col-md-8">
+              {% if enrollment.marks %}
+                {{ enrollment.marks }}%
+              {% else %}
+                <span class="text-muted">Not assigned yet</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
+            <a href="{% url 'enrollments:list' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Back to List
+            </a>
+            <div>
+              <a href="{% url 'enrollments:update' enrollment.pk %}" class="btn btn-primary me-2">
+                <i class="bi bi-pencil me-2"></i>Update Grade
+              </a>
+              <a href="{% url 'enrollments:delete' enrollment.pk %}" class="btn btn-danger">
+                <i class="bi bi-trash me-2"></i>Delete
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

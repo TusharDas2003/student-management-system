@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0"><i class="bi bi-person-lines-fill me-2"></i>{{ student.first_name }} {{ student.last_name }}</h1>
+    <a class="btn btn-outline-secondary" href="{% url 'students:detail' student.pk %}"><i class="bi bi-arrow-left me-1"></i>Back</a>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header">Marks by Course</div>
+        <div class="card-body">
+          <canvas id="marksChart" height="160"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header">Summary</div>
+        <div class="card-body">
+          <p class="mb-2"><strong>Email:</strong> {{ student.email }}</p>
+          <p class="mb-2"><strong>Enrollments:</strong> {{ enrollments.count }}</p>
+          <p class="mb-0"><strong>GPA:</strong> {% if gpa %}{{ gpa }}{% else %}<span class="text-muted">N/A</span>{% endif %}</p>
+          <hr>
+          <a href="{% url 'enrollments:transcript' student.pk %}" class="btn btn-sm btn-primary"><i class="bi bi-file-earmark-text me-1"></i>View Transcript</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mt-4">
+    <div class="card-header">Recent Enrollments</div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Course</th>
+              <th>Credits</th>
+              <th>Enrolled On</th>
+              <th>Grade</th>
+              <th>Marks</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in enrollments %}
+            <tr>
+              <td>{{ e.course.code }} - {{ e.course.title }}</td>
+              <td>{{ e.course.credits }}</td>
+              <td>{{ e.enrolled_on|date:"M d, Y" }}</td>
+              <td>{{ e.grade|default:'—' }}</td>
+              <td>{% if e.marks %}{{ e.marks }}%{% else %}—{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted p-4">No enrollments</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  new Chart(document.getElementById('marksChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ course_labels|safe }},
+      datasets: [{ label: 'Marks %', data: {{ marks_values|safe }}, backgroundColor: '#0dcaf0' }]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+  });
+</script>
+{% endblock %}

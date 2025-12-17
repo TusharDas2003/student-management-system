@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Grade Analytics{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0"><i class="bi bi-graph-up me-2"></i>Grade Analytics</h1>
+    <div>
+      <a class="btn btn-outline-secondary me-2" href="{% url 'analytics:department_reports' %}"><i class="bi bi-collection me-1"></i>Departments</a>
+      <a class="btn btn-primary" href="/students/"><i class="bi bi-people me-1"></i>Students</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header">Pass/Fail by Course</div>
+        <div class="card-body">
+          <canvas id="passFailChart" height="150"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header">Average Marks by Course</div>
+        <div class="card-body">
+          <canvas id="avgMarksChart" height="150"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-1">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header">Overall Grade Distribution</div>
+        <div class="card-body">
+          <canvas id="gradeDistChart" height="120"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  const labels = {{ labels|safe }};
+  const passCounts = {{ pass_counts|safe }};
+  const failCounts = {{ fail_counts|safe }};
+  const avgMarks = {{ avg_marks|safe }};
+  const gradeLabels = {{ grade_labels|safe }};
+  const gradeValues = {{ grade_values|safe }};
+
+  new Chart(document.getElementById('passFailChart'), {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label: 'Pass', data: passCounts, backgroundColor: '#198754' },
+      { label: 'Fail', data: failCounts, backgroundColor: '#dc3545' },
+    ]},
+    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+  });
+
+  new Chart(document.getElementById('avgMarksChart'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'Average %', data: avgMarks, borderColor: '#0d6efd', backgroundColor: 'rgba(13,110,253,.2)', tension: .3, fill: true }
+    ]},
+    options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+  });
+
+  new Chart(document.getElementById('gradeDistChart'), {
+    type: 'bar',
+    data: { labels: gradeLabels, datasets: [ { label: 'Count', data: gradeValues, backgroundColor: '#6c757d' } ] },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+  });
+</script>
+{% endblock %}

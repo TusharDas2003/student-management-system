@@ -1,0 +1,14 @@
+Student Management Analytics Report ({{ frequency }})
+
+Total Enrollments: {{ total_enrollments }}
+Average Marks (all graded): {% if avg_marks %}{{ avg_marks }}%{% else %}N/A{% endif %}
+Pass Rate: {{ pass_rate }}%
+
+Top Courses by Enrollment:
+{% for c in top_courses %}
+- {{ c.code }} - {{ c.title }} ({{ c.enrollments.count }} students)
+{% empty %}
+- No courses yet
+{% endfor %}
+
+Generated automatically by Student Management System.

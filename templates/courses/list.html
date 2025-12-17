@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses - Student Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+  <div class="container">
+    <div class="row mb-5 align-items-center">
+      <div class="col-md-6">
+        <h1 class="display-5 fw-bold"><i class="bi bi-book-fill text-success me-2"></i>Courses</h1>
+        <p class="text-muted">Browse and manage available courses</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <a href="{% url 'courses:create' %}" class="btn btn-success btn-lg">
+          <i class="bi bi-plus-circle me-2"></i>Add Course
+        </a>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-4">
+        <form method="get" class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label small fw-bold text-muted">Search course</label>
+            <input type="text" name="q" class="form-control form-control-lg" placeholder="Code or title..." value="{{ query }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-bold text-muted">Credits</label>
+            <select name="credits" class="form-select form-select-lg">
+              <option value="">All Credits</option>
+              <option value="1" {% if credits_filter == '1' %}selected{% endif %}>1 Credit</option>
+              <option value="2" {% if credits_filter == '2' %}selected{% endif %}>2 Credits</option>
+              <option value="3" {% if credits_filter == '3' %}selected{% endif %}>3 Credits</option>
+              <option value="4" {% if credits_filter == '4' %}selected{% endif %}>4 Credits</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-muted">Sort by</label>
+            <select name="sort" class="form-select form-select-lg">
+              <option value="code" {% if sort == 'code' %}selected{% endif %}>Code</option>
+              <option value="title" {% if sort == 'title' %}selected{% endif %}>Title</option>
+              <option value="credits" {% if sort == 'credits' %}selected{% endif %}>Credits</option>
+            </select>
+          </div>
+          <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-success btn-lg w-100">
+              <i class="bi bi-search me-2"></i>Search
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      {% for c in courses %}
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100 transition-transform">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <a href="{% url 'courses:detail' c.pk %}" class="text-decoration-none">
+                  <h5 class="card-title fw-bold mb-1">{{ c.title }}</h5>
+                </a>
+                <span class="badge bg-info">{{ c.code }}</span>
+              </div>
+              <span class="badge bg-success fs-6">{{ c.credits }} Credits</span>
+            </div>
+            <p class="card-text text-muted small mb-3">{{ c.description|truncatewords:20 }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge bg-secondary">{{ c.enrollment_count }} student{{ c.enrollment_count|pluralize }}</span>
+              <div>
+                <a href="{% url 'courses:detail' c.pk %}" class="btn btn-sm btn-outline-primary me-1" title="View">
+                  <i class="bi bi-eye"></i>
+                </a>
+                <a href="{% url 'courses:update' c.pk %}" class="btn btn-sm btn-outline-warning" title="Edit">
+                  <i class="bi bi-pencil"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="text-center py-5 text-muted">
+          <i class="bi bi-inbox display-6 d-block mb-2"></i>
+          No courses found
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="mt-5">
+      <ul class="pagination pagination-lg justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?q={{ query }}&credits={{ credits_filter }}&sort={{ sort }}&page=1"><i class="bi bi-chevron-double-left"></i></a></li>
+          <li class="page-item"><a class="page-link" href="?q={{ query }}&credits={{ credits_filter }}&sort={{ sort }}&page={{ page_obj.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?q={{ query }}&credits={{ credits_filter }}&sort={{ sort }}&page={{ num }}">{{ num }}</a></li>
+          {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?q={{ query }}&credits={{ credits_filter }}&sort={{ sort }}&page={{ page_obj.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
+          <li class="page-item"><a class="page-link" href="?q={{ query }}&credits={{ credits_filter }}&sort={{ sort }}&page={{ page_obj.paginator.num_pages }}"><i class="bi bi-chevron-double-right"></i></a></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+    <div class="text-center text-muted mt-4">
+      <small>Page <strong>{{ page_obj.number }}</strong> of <strong>{{ page_obj.paginator.num_pages }}</strong> • <strong>{{ paginator.count }}</strong> total courses</small>
+    </div>
+  </div>
+</div>
+{% endblock %}

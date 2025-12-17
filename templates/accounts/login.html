@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Student Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+    <div class="col-md-5 offset-md-3">
+      <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-header bg-gradient-primary text-white py-5 text-center rounded-top-4">
+          <div class="display-1 mb-2"><i class="bi bi-lock-fill"></i></div>
+          <h3 class="mb-0 fw-bold">Sign In</h3>
+        </div>
+        <div class="card-body p-5">
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-4">
+              <label for="username" class="form-label fw-bold">Username</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light border-0"><i class="bi bi-person-fill text-primary"></i></span>
+                <input type="text" class="form-control form-control-lg border-0 ps-0" id="username" name="username" placeholder="Enter your username" required autofocus>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label for="password" class="form-label fw-bold">Password</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light border-0"><i class="bi bi-key-fill text-primary"></i></span>
+                <input type="password" class="form-control form-control-lg border-0 ps-0" id="password" name="password" placeholder="Enter your password" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold py-3 mb-3">
+              <i class="bi bi-arrow-right-circle me-2"></i>Sign In
+            </button>
+          </form>
+          <hr class="my-4">
+          <p class="text-center text-muted mb-0">
+            Don't have an account?<br>
+            <a href="{% url 'accounts:signup' %}" class="fw-bold text-primary text-decoration-none">Create account</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

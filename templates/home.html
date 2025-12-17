@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Student Management System{% endblock %}
+
+{% block content %}
+<div class="hero-section text-white text-center py-5 mb-5">
+  <div class="container">
+    <h1 class="display-3 fw-bold mb-3">Welcome to Student Hub</h1>
+    <p class="lead mb-0">Manage students, courses, and enrollments with ease</p>
+  </div>
+</div>
+
+<div class="container mb-5">
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="stat-card card border-0 shadow-sm h-100 transition-transform">
+        <div class="card-body text-center py-5">
+          <div class="stat-icon mb-3">
+            <i class="bi bi-people-fill text-primary"></i>
+          </div>
+          <h3 class="display-5 fw-bold mb-2">{{ students }}</h3>
+          <p class="text-muted mb-3">Students Registered</p>
+          <a href="/students/" class="btn btn-sm btn-primary">Browse Students</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card card border-0 shadow-sm h-100 transition-transform">
+        <div class="card-body text-center py-5">
+          <div class="stat-icon mb-3">
+            <i class="bi bi-book-fill text-success"></i>
+          </div>
+          <h3 class="display-5 fw-bold mb-2">{{ courses }}</h3>
+          <p class="text-muted mb-3">Courses Available</p>
+          <a href="/courses/" class="btn btn-sm btn-success">View Courses</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card card border-0 shadow-sm h-100 transition-transform">
+        <div class="card-body text-center py-5">
+          <div class="stat-icon mb-3">
+            <i class="bi bi-check-circle-fill text-info"></i>
+          </div>
+          <h3 class="display-5 fw-bold mb-2">{{ enrollments }}</h3>
+          <p class="text-muted mb-3">Active Enrollments</p>
+          <a href="/enrollments/" class="btn btn-sm btn-info">View Enrollments</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <h3 class="fw-bold mb-4"><i class="bi bi-lightning-fill text-warning me-2"></i>Quick Actions</h3>
+      <div class="list-group list-group-flush">
+        <a href="/students/" class="list-group-item list-group-item-action p-4 transition-bg border-0 rounded-3 mb-3 shadow-sm">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-1 fw-bold"><i class="bi bi-people-fill text-primary me-2"></i>Browse Students</h6>
+              <p class="mb-0 text-muted small">Search, filter, and manage student records with pagination</p>
+            </div>
+            <i class="bi bi-arrow-right text-primary"></i>
+          </div>
+        </a>
+        <a href="/courses/" class="list-group-item list-group-item-action p-4 transition-bg border-0 rounded-3 mb-3 shadow-sm">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-1 fw-bold"><i class="bi bi-book-fill text-success me-2"></i>View Courses</h6>
+              <p class="mb-0 text-muted small">Explore available courses with credit filtering and search</p>
+            </div>
+            <i class="bi bi-arrow-right text-success"></i>
+          </div>
+        </a>
+        <a href="/enrollments/" class="list-group-item list-group-item-action p-4 transition-bg border-0 rounded-3 mb-3 shadow-sm">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-1 fw-bold"><i class="bi bi-check-circle-fill text-info me-2"></i>Manage Enrollments</h6>
+              <p class="mb-0 text-muted small">View and manage student enrollments across all courses</p>
+            </div>
+            <i class="bi bi-arrow-right text-info"></i>
+          </div>
+        </a>
+        {% if user.is_authenticated and user.profile.role == 'admin' %}
+        <a href="/admin/" class="list-group-item list-group-item-action p-4 transition-bg border-0 rounded-3 mb-3 shadow-sm">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h6 class="mb-1 fw-bold"><i class="bi bi-gear-fill text-danger me-2"></i>Admin Dashboard</h6>
+              <p class="mb-0 text-muted small">Full administrative control and system management</p>
+            </div>
+            <i class="bi bi-arrow-right text-danger"></i>
+          </div>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

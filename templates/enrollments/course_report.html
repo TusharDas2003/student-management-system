@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Course Enrollment Report - {{ course.code }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col">
+        <a href="{% url 'courses:detail' course.pk %}" class="btn btn-outline-secondary mb-3 no-print">
+          <i class="bi bi-arrow-left me-2"></i>Back to Course
+        </a>
+        <button onclick="window.print()" class="btn btn-primary mb-3 no-print">
+          <i class="bi bi-printer me-2"></i>Print Report
+        </button>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-5">
+        <div class="text-center mb-5">
+          <h1 class="display-5 fw-bold text-primary">Course Enrollment Report</h1>
+          <p class="text-muted">Student Management System</p>
+        </div>
+
+        <div class="row mb-5">
+          <div class="col-md-6">
+            <h4 class="mb-3">Course Information</h4>
+            <table class="table table-borderless">
+              <tr>
+                <td class="fw-bold" width="40%">Course Code:</td>
+                <td>{{ course.code }}</td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Title:</td>
+                <td>{{ course.title }}</td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Credits:</td>
+                <td>{{ course.credits }}</td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Created:</td>
+                <td>{{ course.created_at|date:"F d, Y" }}</td>
+              </tr>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <h4 class="mb-3">Enrollment Statistics</h4>
+            <table class="table table-borderless">
+              <tr>
+                <td class="fw-bold" width="50%">Total Enrolled:</td>
+                <td>{{ total_enrolled }}</td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Average Marks:</td>
+                <td>
+                  {% if avg_marks %}
+                    {{ avg_marks|floatformat:2 }}%
+                  {% else %}
+                    N/A
+                  {% endif %}
+                </td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Report Generated:</td>
+                <td>{% now "F d, Y" %}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        {% if course.description %}
+        <div class="mb-4">
+          <h4 class="mb-3">Course Description</h4>
+          <p class="text-muted">{{ course.description }}</p>
+        </div>
+        {% endif %}
+
+        <h4 class="mb-3">Enrolled Students</h4>
+        {% if enrollments %}
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th class="text-center">Enrolled On</th>
+                <th class="text-center">Grade</th>
+                <th class="text-center">Marks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for enrollment in enrollments %}
+              <tr>
+                <td><strong>{{ enrollment.student.first_name }} {{ enrollment.student.last_name }}</strong></td>
+                <td>{{ enrollment.student.email }}</td>
+                <td class="text-center">{{ enrollment.enrolled_on|date:"M d, Y" }}</td>
+                <td class="text-center">
+                  {% if enrollment.grade %}
+                    <span class="badge {% if enrollment.grade in 'A+,A,A-' %}bg-success{% elif enrollment.grade in 'B+,B,B-' %}bg-primary{% elif enrollment.grade in 'C+,C,C-' %}bg-warning text-dark{% elif enrollment.grade == 'IP' %}bg-info{% else %}bg-danger{% endif %}">
+                      {{ enrollment.grade }}
+                    </span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+                <td class="text-center">
+                  {% if enrollment.marks %}
+                    {{ enrollment.marks }}%
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle me-2"></i>
+          No students enrolled in this course yet.
+        </div>
+        {% endif %}
+
+        <div class="mt-5 pt-4 border-top text-center text-muted">
+          <p class="mb-0"><small>This is an official report from the Student Management System</small></p>
+          <p><small>Generated on {% now "F d, Y \a\\t g:i A" %}</small></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #dee2e6 !important;
+  }
+  body {
+    background: white !important;
+  }
+}
+</style>
+{% endblock %}

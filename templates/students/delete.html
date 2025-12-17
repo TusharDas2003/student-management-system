@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Student - Student Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-danger text-white p-4">
+          <h3 class="mb-0"><i class="bi bi-trash me-2"></i>Delete Student</h3>
+        </div>
+        <div class="card-body p-4">
+          <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>Warning:</strong> This action cannot be undone!
+          </div>
+          
+          <p class="mb-3">Are you sure you want to delete this student?</p>
+          <div class="bg-light p-3 rounded mb-4">
+            <h5>{{ object.first_name }} {{ object.last_name }}</h5>
+            <p class="mb-0 text-muted">{{ object.email }}</p>
+          </div>
+
+          {% if object.enrollments.count > 0 %}
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            This student has {{ object.enrollments.count }} enrollment{{ object.enrollments.count|pluralize }} that will also be deleted.
+          </div>
+          {% endif %}
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+              <a href="{% url 'students:detail' object.pk %}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle me-2"></i>Cancel
+              </a>
+              <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-2"></i>Yes, Delete Student
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

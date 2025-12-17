@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Students - Student Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+  <div class="container">
+    <div class="row mb-5 align-items-center">
+      <div class="col-md-6">
+        <h1 class="display-5 fw-bold"><i class="bi bi-people-fill text-primary me-2"></i>Students</h1>
+        <p class="text-muted">Manage and view all student records</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <a href="{% url 'students:create' %}" class="btn btn-primary btn-lg">
+          <i class="bi bi-plus-circle me-2"></i>Add Student
+        </a>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-4">
+        <form method="get" class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label small fw-bold text-muted">Search by name or email</label>
+            <input type="text" name="q" class="form-control form-control-lg" placeholder="Enter name or email..." value="{{ query }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-muted">Sort by</label>
+            <select name="sort" class="form-select form-select-lg">
+              <option value="last_name" {% if sort == 'last_name' %}selected{% endif %}>Last Name</option>
+              <option value="first_name" {% if sort == 'first_name' %}selected{% endif %}>First Name</option>
+              <option value="-created_at" {% if sort == '-created_at' %}selected{% endif %}>Newest First</option>
+            </select>
+          </div>
+          <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary btn-lg w-100">
+              <i class="bi bi-search me-2"></i>Search
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th class="fw-bold text-dark"><i class="bi bi-person-fill text-primary me-2"></i>Name</th>
+            <th class="fw-bold text-dark"><i class="bi bi-envelope-fill text-success me-2"></i>Email</th>
+            <th class="fw-bold text-dark"><i class="bi bi-calendar-event text-warning me-2"></i>Date of Birth</th>
+            <th class="fw-bold text-dark"><i class="bi bi-calendar2-check text-info me-2"></i>Joined</th>
+            <th class="fw-bold text-dark"><i class="bi bi-book text-secondary me-2"></i>Enrollments</th>
+            <th class="fw-bold text-dark text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in students %}
+          <tr class="border-bottom transition-bg">
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="avatar me-3">{{ s.first_name|slice:":1" }}{{ s.last_name|slice:":1" }}</div>
+                <a href="{% url 'students:detail' s.pk %}" class="text-decoration-none">
+                  <strong>{{ s.first_name }} {{ s.last_name }}</strong>
+                </a>
+              </div>
+            </td>
+            <td><small class="text-muted">{{ s.email }}</small></td>
+            <td>
+              {% if s.date_of_birth %}
+                <span class="badge bg-warning text-dark">{{ s.date_of_birth|date:"d M Y" }}</span>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td><small class="text-muted">{{ s.created_at|date:"d M Y" }}</small></td>
+            <td>
+              <span class="badge bg-info">{{ s.enrollment_count }} enrollment{{ s.enrollment_count|pluralize }}</span>
+            </td>
+            <td>
+              <a href="{% url 'students:detail' s.pk %}" class="btn btn-sm btn-outline-primary me-1" title="View">
+                <i class="bi bi-eye"></i>
+              </a>
+              <a href="{% url 'students:update' s.pk %}" class="btn btn-sm btn-outline-warning me-1" title="Edit">
+                <i class="bi bi-pencil"></i>
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted py-5">
+              <i class="bi bi-inbox display-6 d-block mb-2"></i>
+              No students found
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="mt-5">
+      <ul class="pagination pagination-lg justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ query }}&sort={{ sort }}&page=1" aria-label="First">
+              <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?q={{ query }}&sort={{ sort }}&page={{ page_obj.previous_page_number }}" aria-label="Previous">
+              <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
+            </a>
+          </li>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?q={{ query }}&sort={{ sort }}&page={{ num }}">{{ num }}</a></li>
+          {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ query }}&sort={{ sort }}&page={{ page_obj.next_page_number }}" aria-label="Next">
+              <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?q={{ query }}&sort={{ sort }}&page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+              <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+    <div class="text-center text-muted mt-4">
+      <small>Page <strong>{{ page_obj.number }}</strong> of <strong>{{ page_obj.paginator.num_pages }}</strong> • <strong>{{ paginator.count }}</strong> total students</small>
+    </div>
+  </div>
+</div>
+{% endblock %}
